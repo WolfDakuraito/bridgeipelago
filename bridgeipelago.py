@@ -508,7 +508,7 @@ class HintClient:
         except Exception as e:
             print("Error while trying to connect HintClient to Archipelago:")
             print(e)
-            websocket_queue.put("!! HintClient start error...")
+            chat_queue.put("!! HintClient start error...")
 
     def process_hint(self) -> None:
         print("-- Requesting Hint from server.")
@@ -1961,9 +1961,6 @@ def main():
             hint_object = hint_queue.get()
             hintprocessing_queue.put(hint_object[1])
             hint_client = HintClient(
-                server_uri=CoreConfig["ArchipelagoConfig"]['ArchipelagoServer'],
-                port=CoreConfig["ArchipelagoConfig"]['ArchipelagoPort'],
-                password=GetArchPassword(),
                 slot_name=hint_object[0],
             )      
             hint_client.start()
