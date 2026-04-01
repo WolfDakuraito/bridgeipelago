@@ -13,9 +13,9 @@ See the [SETUP GUIDE](docs/setup.md)
 
 There is also a [DOCKER](docs/docker.md) setup guide as well (if you're into that kind of thing)
 
-You can chagne rooms via discord by following the directions in [SWAPPING ROOMS IN DISCORD](docs/setup.md#swapping-rooms-via-discord)
+You can change rooms via discord by following the directions in [SWAPPING ROOMS IN DISCORD](docs/setup.md#swapping-rooms-via-discord)
 
-## Funtionality:
+## Functionality:
 
 ### Core
 This bot will monitor and track progress as you play through your Archipelago run.  
@@ -44,7 +44,7 @@ What this bot will NOT do:
  - Find the reason the children of this world have forgotten the meaning of Christmas
 
 
-In v1.2.5 and above, messages will be colorcoded to their usefulness in the Archipelago run.  
+In v1.2.5 and above, messages will be color-coded to their usefulness in the Archipelago run.  
 |Color|Item Type|
 |---|---
 |YELLOW|Progression Item|
@@ -121,7 +121,7 @@ Hopefully that makes sense.
 |**Archipelago Config**||
 |`ArchipelagoServer`|The URL of the Archipelago server you'd like to connect to|
 |`ArchipelagoPort`|The port of the Archipelago server you'd like to connect to|
-|`ArchipelagoPassword`|The password of the Archipelago sroom you'd like to connect to|
+|`ArchipelagoPassword`|The password of the Archipelago room you'd like to connect to|
 |`ArchipelagoBotSlot`|The name of the slot you'd like the bot to use when connecting to archipelago|
 |`ArchipelagoTrackerURL`|URL of the tracker you'd like to query|
 |`ArchipelagoServerURL`|URL of the server you'd like to query|
@@ -141,7 +141,7 @@ Hopefully that makes sense.
 |`GoalMessages`|Will relay goal messages|
 |`ReleaseMessages`|Will relay release messages|
 |`CollectMessages`|Will relay collect messages|
-|`CountdownMessages`|Will relay server coutndown messages|
+|`CountdownMessages`|Will relay server countdown messages|
 |`DeathlinkMessages`|Will relay deathlink messages|
 |`SendOwnSlotMessages`|By default, the bot will not relay its own chat messages from the AP room to the Discord channel in order to prevent infinite relay loops. If you're loading the bot into an existing AP without a slot for the bot to connect to, however, you may want to disable this feature in order to relay chat messages for the player using that slot. The bot will never relay Discord messages back from the room to the channel, even with this option on.|
 |`APClientHelp`|Will relay `!help` to discord|
@@ -185,7 +185,7 @@ Hopefully that makes sense.
 |`SelfHostNoWeb`|Disabled WebHost-specific functionality for self-hosted games with no WebHost module|
 |`CycleDiscord`|Setting to a value above 0 will restart the discord process every X seconds|
 
-**\[1] For group IDs, ensure the '&' character is at the beggining of the ID** 
+**\[1] For group IDs, ensure the '&' character is at the beginning of the ID** 
 
 **\[2] Check [UniqueID](docs/setup.md/#UniqueID) in the setup readme on what this value is used for**  
 
@@ -194,7 +194,7 @@ Hopefully that makes sense.
 **\[4] Edit /modules/DeathlinkFlavor.py to your heart's content for custom flavor**
 
 **\[5] Ensure directories end in a /**  
-**\[5] These should be four diffrent directories, all these logs in the same place will break the bot.**
+**\[5] These should be four different directories, all these logs in the same place will break the bot.**
 
 **\[6] DebugMode can expose unintended system information. Use with care.**
 
@@ -203,10 +203,10 @@ Hopefully that makes sense.
 
 ### Special Thanks
 
-Thank you to the people who encourged me to pour my time into this bot. Specificaly the Zajcats.
+Thank you to the people who encouraged me to pour my time into this bot. Specifically the Zajcats.
 
 Thank you to Rainwave Discord community for help with a private alpha-test, bugfixing, and being my eternal beta-testers.
 
-Thank you to [endrawr](https://github.com/endrawr) and [ZeroShork](https://github.com/ZeroShork) for getting the basics of the docker implimentation set up and allowing me to use their work.
+Thank you to [endrawr](https://github.com/endrawr) and [ZeroShork](https://github.com/ZeroShork) for getting the basics of the docker implementation set up and allowing me to use their work.
 
 Thank you to the Archipelago Community for making an amazing platform for the world to use.

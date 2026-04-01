@@ -58,7 +58,7 @@ You're done with the bot portal for now, but keep that token handy!
        - [Latest stable release](https://github.com/Quasky/bridgeipelago/releases/latest)
      - Unstable (hopefully not):
        - [All releases (Stable and Pre-Release)](https://github.com/Quasky/bridgeipelago/releases)
-       - Or clone the main repo for a crazy expierience `https://github.com/Quasky/bridgeipelago.git`
+       - Or clone the main repo for a crazy experience `https://github.com/Quasky/bridgeipelago.git`
   1. Copy `config.json.template` to `config.json`
 - Discord Config
     1. Fill out the `DiscordToken` with your discord app/bot's token
@@ -72,7 +72,7 @@ You're done with the bot portal for now, but keep that token handy!
   1. Fill out `ArchipelagoBotSlot` with the slot name of the bot (Not needed if you used the included yaml)
   1. Fill out `ArchipelagoTrackerURL` with the Tracker room URL
   1. Fill out `ArchipelagoServerURL` with the room URL
-  1. Fill out `UniqueID` with the RoomID/seed/an arbitrary value (see [UniqueID](#UniqueID) for detailed useage)
+  1. Fill out `UniqueID` with the RoomID/seed/an arbitrary value (see [UniqueID](#UniqueID) for detailed usage)
 - Item Filter Config
   1. Set `BotItemSpoilTraps` to `true` if you'd like to have traps spoiled, or change to `false` to hide traps
   1. Set `BotItemFilterLevel` to the level you'd like: `0`, `1`, or `2` (See the main [Readme](/README.md) for details on what the filter levels mean)
@@ -106,7 +106,7 @@ You may need to run `Set-ExecutionPolicy Bypass` to enable scripts.
 1. Install dependencies: `pip install -r requirements.txt`
 
 ## Step 6) Finally: Running the Bot
-Ensure you've joined the venv and setup the .env file, then run: `python3 bridgeipelago.py`  
+Ensure you've joined the venv and set up the .env file, then run: `python3 bridgeipelago.py`  
 > Windows users may need to run `py bridgeipelago.py` depending on how Python set up its aliases.
 
 You'll see the bot connect to your Discord channel and join the Archipelago game.
@@ -123,7 +123,7 @@ When changing rooms / AP runs, you'll need to manually purge the data directorie
 
 ## Swapping Rooms via Discord
 You have the ability to swap rooms without manually editing the .env of the bot.
-This process will automaticly create new directories, and reload all data needed for running Bridgeipelago.  
+This process will automatically create new directories, and reload all data needed for running Bridgeipelago.  
 
 It's a fairly painless process, but should be done carefully and in order, as to not break Bridgeipelago into a thousand pieces.
 
@@ -144,11 +144,11 @@ It's a fairly painless process, but should be done carefully and in order, as to
 
 By setting the values in this order, you can prep the new connection in steps 1-3, create the new directories in step 4, populate new room data with step 5, then finally; refresh discord in step 6
 
-If any any time this process breaks or throws an error here are some common troubleshooting tips:
+If at any time this process breaks or throws an error here are some common troubleshooting tips:
   - Stopping Bridgeipelago fully and restarting it
   - Stopping Bridgeipelago, deleting the contents of the data directories, and restarting Bridgeipelago
   - Nuking everything and restarting 
-  - Praying to the magic smoke god in your comptuer to make it work
+  - Praying to the magic smoke god in your computer to make it work
 
 If none of this works, poke in the discord for help and someone will get you sorted. :)
 
