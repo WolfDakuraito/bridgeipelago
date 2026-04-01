@@ -7,7 +7,10 @@ If you have any questions, feel free to ask in the [Discord](https://discord.gg/
 This bot requires `python` and `pip` at a minimum.  
 General knowledge of python is encouraged but <u>not strictly necessary</u>.  
 I've also written this guide with Linux in mind, but that can be easily accomplished with WSL on windows, or a VM to run the bot.  
-There is some minor help in Step 5 with running python commands in windows.
+
+**Bridgeipelago Windows OS support has been removed in v3.0. Some day I'll add it back.**  
+**You can use WSL to run Bridgeipelago VERY easily. [WSL Setup](https://learn.microsoft.com/en-us/windows/wsl/install)**  
+~~There is some minor help in Step 5 with running python commands in windows.~~
 
 To be honest, you can figure out most errors by just googling.
 
@@ -100,10 +103,12 @@ In the `Advanced Config` section:
 1. Install dependencies: `pip install -r requirements.txt`
 
 ### Windows Users (Powershell):
-You may need to run `Set-ExecutionPolicy Bypass` to enable scripts.
-1. Create the venv: `py -m venv bridgeipelago`
-1. Activate the venv: `./bridgeipelago/Scripts/Activate.ps1`
-1. Install dependencies: `pip install -r requirements.txt`
+**Bridgeipelago Windows support has been removed in v3.0. Some day I'll add it back.**  
+**You can use WSL to run Bridgeipelago VERY easily. [WSL Setup](https://learn.microsoft.com/en-us/windows/wsl/install)**  
+~~You may need to run `Set-ExecutionPolicy Bypass` to enable scripts.~~
+~~1. Create the venv: `py -m venv bridgeipelago`~~
+~~1. Activate the venv: `./bridgeipelago/Scripts/Activate.ps1`~~
+~~1. Install dependencies: `pip install -r requirements.txt`~~
 
 ## Step 6) Finally: Running the Bot
 Ensure you've joined the venv and set up the .env file, then run: `python3 bridgeipelago.py`  

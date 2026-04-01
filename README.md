@@ -13,7 +13,10 @@ See the [SETUP GUIDE](docs/setup.md)
 
 There is also a [DOCKER](docs/docker.md) setup guide as well (if you're into that kind of thing)
 
-You can change rooms via discord by following the directions in [SWAPPING ROOMS IN DISCORD](docs/setup.md#swapping-rooms-via-discord)
+You can change rooms via discord by following the directions in [SWAPPING ROOMS IN DISCORD](docs/setup.md#swapping-rooms-via-discord)  
+
+**Bridgeipelago Windows OS support has been removed in v3.0. Some day I'll add it back.**  
+**You can use WSL to run Bridgeipelago VERY easily. [WSL Setup](https://learn.microsoft.com/en-us/windows/wsl/install)**  
 
 ## Functionality:
 
