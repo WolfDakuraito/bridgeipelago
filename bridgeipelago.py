@@ -95,6 +95,11 @@ CheckPlotLocation = LoggingDirectory + 'CheckPlot.png'
 ArchGameDump = ArchDataDirectory + 'ArchGameDump.json'
 ArchConnectionDump = ArchDataDirectory + 'ArchConnectionDump.json'
 ArchRoomData = ArchDataDirectory + 'ArchRoomData.json'
+#HINT INTEGRATION
+HintDirectory = os.getcwd() + os.getenv('HintDirectory') + UniqueID + '/'
+HintLogLocation = HintDirectory + 'PendingHints.txt'
+HintPingRegister = HintDirectory + 'RegisteredGames.csv'
+#HINT INTEGRATION END
 
 if DebugMode == "true":
     logging.basicConfig(
@@ -146,6 +151,9 @@ intents = discord.Intents.default()
 intents.message_content = True
 DiscordClient = discord.Client(intents=intents)
 tree = app_commands.CommandTree(DiscordClient)
+#HINT INTEGRATION
+intents.members = True
+#HINT INTEGRATION END
 
 #TO DO - Central Control for bot I'll just leave this in for now.
 DiscordGuildID = 1171964435741544498
@@ -162,6 +170,10 @@ if not os.path.exists(RegistrationDirectory):
 
 if not os.path.exists(ItemQueueDirectory):
     os.makedirs(ItemQueueDirectory)
+#HINT INTEGRATION
+if not os.path.exists(HintDirectory):
+    os.makedirs(HintDirectory)
+#HINT INTEGRATION END
 
 #Logfile Initialization. We need to make sure the log files exist before we start writing to them.
 l = open(DeathFileLocation, "a")
@@ -172,6 +184,14 @@ l.close()
 
 l = open(DeathTimecodeLocation, "a")
 l.close()
+#HINT INTEGRATION.
+l = open(HintLogLocation, "a")
+l.close()
+
+l = open(HintPingRegister, "a")
+l.close()
+
+#HINT INTEGRATION END
 
 # Load Meta Modules if they are enabled in the .env
 if EnableFlavorDeathlink == "true":
@@ -387,6 +407,19 @@ async def on_ready():
     ProcessDeathQueue.start()
     ProcessChatQueue.start()
     CheckCommandQueue.start()
+    ProcessHintQueue.start() #HINT INTEGRATION
+
+    #REACTION INTEGRATION
+    global reaction_config, reaction_initialized
+    # Avoid from running multiple times
+    if reaction_config is None:
+        slots = [
+            ArchConnectionJSON['slot_info'][key]['name']
+            for key in ArchConnectionJSON['slot_info']
+        ]
+
+        reaction_config = await setup_reaction_system(DiscordClient, slots)
+    #REACTION INTEGRATION END
 
     print("++ ",JoinMessage)
     print("++ Async bot started -", DiscordClient.user)
@@ -618,6 +651,99 @@ async def ProcessChatQueue():
         chatmessage = chat_queue.get()
         if not (chatmessage['data'][0]['text']).startswith(ArchipelagoBotSlot):
             await SendMainChannelMessage(chatmessage['data'][0]['text'])
+
+#HINT INTEGRATION
+@tasks.loop(seconds=60)
+async def ProcessHintQueue():
+    try:
+        page = requests.get(ArchTrackerURL)
+        soup = BeautifulSoup(page.content, "html.parser")
+
+        tables = soup.find("table", id="hints-table")
+        if not tables:
+            return
+
+        rows = tables.find_all('tr')
+
+        # Load already pending hints from file
+        if not os.path.exists(HintLogLocation):
+            open(HintLogLocation, "a").close()
+
+        with open(HintLogLocation, "r") as f:
+            logged_hints = f.read().splitlines()
+
+        new_hints = []
+        for row in rows:
+            cells = row.find_all('td')
+            if len(cells) >= 7:
+                found = cells[6].text.strip()
+                if found == "✔":
+                    continue  #Ignore found hints from entering into the file
+
+                hint_data = [td.text.strip() for td in cells[:6]]
+                hint_str = " || ".join(hint_data)
+
+                if hint_str not in logged_hints:
+                    new_hints.append(hint_str)
+
+        # Write and announce new hints
+        if new_hints:
+            with open(HintLogLocation, "a") as f:
+                for hint in new_hints:
+                    f.write(hint + "\n")
+
+            for hint in new_hints:
+                try:
+                    finder, receiver, item, location, game, entrance = hint.split(" || ")
+                    ping = await LookupPingFromHintMap(finder)
+                    ping_str = f"{ping} " if ping else ""
+                    message = f"**[Hint]** **{receiver}**'s **[{item}]** is at __***{location}***__ in **{finder}**'s world {ping_str} | Game: **[{game}]**"
+                    #Translated version below
+                    #message = f"**[Hint]** El item **[{item}]** del jugador **{receiver}** está en __***{location}***__ del juego **[{game}]** de **{finder}** {ping_str}"
+                    await SendMainChannelMessage(message)
+                except Exception as e:
+                    print("Error sending new hint:", e)
+
+        # Search for found hints to announce
+        updated_hints = []
+        with open(HintLogLocation, "r") as f:
+            pending_hints = f.read().splitlines()
+
+        for row in rows:
+            cells = row.find_all('td')
+            if len(cells) >= 7:
+                found = cells[6].text.strip()
+                if found != "✔":
+                    continue
+
+                hint_data = [td.text.strip() for td in cells[:6]]
+                hint_str = " || ".join(hint_data)
+
+                if hint_str in pending_hints:
+                    try:
+                        finder, receiver, item, location, game, entrance = hint_str.split(" || ")
+                        ping = await LookupPingFromHintMap(receiver)
+                        ping_str = f"{ping} " if ping else f"{receiver} "
+                        message = f"**[Hint]** {ping_str}, your item **[{item}]** has been found by **{finder}**!"
+                        #Translated version below
+                        #message = f"**[Hint]** {ping_str}¡Su item **[{item}]** ha sido encontrado por **{finder}**!"
+                        await SendMainChannelMessage(message)
+                        updated_hints.append(hint_str)
+                    except Exception as e:
+                        print("Error notifying found hint:", e)
+
+        # Delete found hints from file
+        remaining_hints = [hint for hint in pending_hints if hint not in updated_hints]
+
+        with open(HintLogLocation, "w") as f:
+            for hint in remaining_hints:
+                f.write(hint + "\n")
+
+    except Exception as e:
+        print("General error in ProcessHintQueue:", e)
+        await SendDebugChannelMessage(f"ERROR IN HINT QUEUE <@{DiscordAlertUserID}>")
+
+#HINT INTEGRATION END
 
 @tree.command(name="register",
     description="Registers you for AP slot",
@@ -1485,6 +1611,84 @@ def ReloadJSONPackages():
 
     with open(ArchConnectionDump, 'r') as f:
         ArchConnectionJSON = json.load(f)
+
+#HINT INTEGRATION
+async def LookupPingFromHintMap(finder_slot):
+    try:
+        if not os.path.exists(HintPingRegister):
+            return None
+
+        with open(HintPingRegister, "r") as f:
+            lines = f.read().splitlines()
+
+        for line in lines:
+            parts = line.strip().split(",")
+
+            if len(parts) < 2:
+                continue
+
+            slot = parts[0]
+
+            if slot != finder_slot:
+                continue
+
+            type_ = int(parts[1])
+
+            # =========================
+            # INDIVIDUAL HINTS (Slot behind players)
+            # =========================
+            if type_ == 0:
+                users = parts[2:] if len(parts) > 2 else []
+
+                # limpiar IDs inválidos
+                clean_users = []
+                for uid in users:
+                    uid = uid.strip()
+                    if uid.isdigit() and uid != "0":
+                        clean_users.append(uid)
+
+                if not clean_users:
+                    return None
+
+                return " ".join([f"<@{uid}>" for uid in clean_users])
+
+            # =========================
+            # GROUP HINTS (Slot behind role)
+            # =========================
+            elif type_ == 1:
+                if len(parts) > 2:
+                    role_id = parts[2]
+                    return f"<@&{role_id}>"
+
+        return None
+
+    except Exception as e:
+        print("Error en LookupPingFromHintMap:", e)
+        return None
+
+
+#REACTION INTEGRATION
+from HintIntegration.reaction_config import (
+    setup_reaction_system,
+    handle_reaction_add,
+    handle_reaction_remove
+)
+
+reaction_config = None
+
+
+@DiscordClient.event
+async def on_raw_reaction_add(payload):
+    if reaction_config:
+        await handle_reaction_add(DiscordClient, payload, reaction_config)
+
+@DiscordClient.event
+async def on_raw_reaction_remove(payload):
+    if reaction_config:
+        await handle_reaction_remove(DiscordClient, payload, reaction_config)
+#REACTION INTEGRATION END
+
+#HINT INTEGRATION END
 
 
 async def CancelProcess():
