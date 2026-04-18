@@ -175,7 +175,6 @@ hintprocessing_queue = Queue()
 #Discord Bot Initialization
 intents = discord.Intents.default()
 intents.message_content = True
-intents.members = True #REACTIONREGISTER needs this intent
 discord_client = discord.Client(intents=intents)
 tree = app_commands.CommandTree(discord_client)
 try:
