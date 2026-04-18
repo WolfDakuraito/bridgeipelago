@@ -99,7 +99,7 @@ def save_data(CoreConfig, data):
 def build_message_content(slots, emojis, CoreConfig):
     data = load_data(CoreConfig)
 
-    lines = ["**Slot Subscription**", "React to receive pings:\n"]
+    lines = ["**Slot Subscription**", "React to suscribe to slot:\n"]
 
     for i, slot in enumerate(slots):
         line = f"{emojis[i]} {slot}"
@@ -153,6 +153,43 @@ def log_module_error(message):
     writer = getattr(main, "WriteToErrorLog", None)
     if writer:
         writer("ReactionRegister", message)
+
+
+def get_registration_path(member_name):
+    main = sys.modules.get("bridgeipelago") or sys.modules.get("__main__")
+    get_core_directory = getattr(main, "GetCoreDirectory", None)
+    if get_core_directory is None:
+        raise RuntimeError("GetCoreDirectory is not available from the main module.")
+    return Path(get_core_directory("reg")) / f"{member_name}.json"
+
+
+def add_slot_registration(member_name, slot):
+    registration_path = get_registration_path(member_name)
+    registration_path.parent.mkdir(parents=True, exist_ok=True)
+
+    if not registration_path.exists():
+        registration_path.write_text("[]")
+
+    registration_contents = json.loads(registration_path.read_text())
+    if slot not in registration_contents:
+        registration_contents.append(slot)
+        registration_path.write_text(json.dumps(registration_contents, indent=4))
+
+
+def remove_slot_registration(member_name, slot):
+    registration_path = get_registration_path(member_name)
+
+    if not registration_path.exists():
+        return
+
+    registration_contents = json.loads(registration_path.read_text())
+    if slot in registration_contents:
+        registration_contents.remove(slot)
+
+    if registration_contents:
+        registration_path.write_text(json.dumps(registration_contents, indent=4))
+    else:
+        registration_path.unlink(missing_ok=True)
 
 
 # =========================
@@ -427,6 +464,10 @@ def setup(bot, CoreConfig):
                 users = info.get("users", [])
                 if str(member.id) not in users:
                     users.append(str(member.id))
+                try:
+                    add_slot_registration(str(member), slot)
+                except Exception as e:
+                    log_module_error(f"Failed to add registration for {member} -> {slot}: {e}")
             else:
                 role = guild.get_role(int(info["role"]))
                 if role is None:
@@ -478,6 +519,10 @@ def setup(bot, CoreConfig):
                 users = info.get("users", [])
                 if str(member.id) in users:
                     users.remove(str(member.id))
+                try:
+                    remove_slot_registration(str(member), slot)
+                except Exception as e:
+                    log_module_error(f"Failed to remove registration for {member} -> {slot}: {e}")
             else:
                 role = guild.get_role(int(info["role"]))
                 if role is None:
